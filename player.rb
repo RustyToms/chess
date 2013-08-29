@@ -1,3 +1,5 @@
+require "colorize"
+
 class HumanPlayer
   attr_reader :color, :board, :name
 
@@ -11,7 +13,7 @@ class HumanPlayer
     system('clear')
     board.print_board
     if board.in_check?(self.color)
-      puts "#{self.name}, you are in check!".center(40)
+      puts "#{self.name}, you are in check!".center(40).colorize(:background => :yellow).blink
     end
     get_move
   end
@@ -19,7 +21,7 @@ class HumanPlayer
   def get_move
     begin
       puts "#{self.name}, what is your move?".center(40)
-      puts "(e.g. 'D2 D3' or 'S' to save)".center(40)
+      puts "(e.g. 'D2 D3', 'CL' or 'CR' to castle left or right, or 'S' to save)".center(40)
       input = $stdin.gets.chomp.upcase
 
       return input if input == 'S'
@@ -41,6 +43,7 @@ class HumanPlayer
   end
 
   def valid_castle?(direction)
+    puts "Checking if castle is available, cannot castle in or through check."
     return false if board.in_check?(self.color)
 
 
@@ -53,7 +56,6 @@ class HumanPlayer
       move_in_check?([king, [col, row]]) unless col == 1
       return false unless board[[col, row]].color.empty?
     end
-    puts 'in valid castle'
 
     [rook, king].each do |piece|
       board.move_history.each do |turn|
